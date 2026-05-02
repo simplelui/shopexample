@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Minimal Tech Store</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Inter',sans-serif;
+}
+
+body{
+    background:#1c1c1c;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+}
+
+/* =========================================
+   GLOBAL
+========================================= */
+
+.screen{
+    display:none;
+    min-height:100vh;
+    background:#181818;
+}
+
+.screen.active{
+    display:block;
+    animation:fadeIn .25s ease;
+}
+
+.main-layout{
+    padding-bottom:110px;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(5px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* =========================================
+   NAVIGATION
+========================================= */
+
+.bottom-nav-container{
+    position:fixed;
+    bottom:20px;
+    left:0;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    z-index:1000;
+    transition:.3s;
+}
+
+.bottom-nav-container.hidden{
+    transform:translateY(150%);
+}
+
+.bottom-nav{
+    width:85%;
+    max-width:500px;
+    padding:16px 30px;
+    border-radius:32px;
+    background:#272727;
+    border:1px solid #3a3a3a;
+    backdrop-filter:blur(12px);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 10px 30px rgba(0,0,0,.3);
+}
+
+.nav-item{
+    color:#a8a8a8;
+    font-size:12px;
+    font-weight:600;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.nav-item.active-nav{
+    color:white;
+}
+
+.nav-icon{
+    font-size:18px;
+}
+
+/* =========================================
+   HEADER
+========================================= */
+
+.header-standard{
+    padding:20px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    position:sticky;
+    top:0;
+    z-index:100;
+    background:rgba(24,24,24,.95);
+    backdrop-filter:blur(10px);
+}
+
+.header-title{
+    color:white;
+    font-weight:700;
+    flex:1;
+}
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+button{
+    transition:.2s ease;
+}
+
+button:hover{
+    transform:scale(1.02);
+}
+
+button:active{
+    transform:scale(.98);
+}
+
+.btn-primary{
+    background:white;
+    color:black;
+    border:none;
+    padding:15px 20px;
+    border-radius:14px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.btn-secondary{
+    background:#2d2d2d;
+    color:white;
+    border:none;
+    padding:15px 20px;
+    border-radius:14px;
+    font-weight:700;
+    cursor:pointer;
+    flex:1;
+}
+
+.btn-icon{
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    background:#2a2a2a;
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    border:1px solid #3a3a3a;
+}
+
+/* =========================================
+   SEARCH
+========================================= */
+
+.search-container{
+    flex:1;
+    background:#2a2a2a;
+    border:1px solid #3a3a3a;
+    border-radius:24px;
+    display:flex;
+    align-items:center;
+    padding:12px 16px;
+}
+
+.search-container input{
+    flex:1;
+    background:transparent;
+    border:none;
+    outline:none;
+    color:white;
+    font-size:14px;
+}
+
+.search-container input::placeholder{
+    color:#9f9f9f;
+}
+
+/* =========================================
+   HERO
+========================================= */
+
+.hero-banner{
+    margin:0 20px 20px;
+    padding:24px;
+    border-radius:24px;
+    background:linear-gradient(145deg,#2b2b2b,#1f1f1f);
+    border:1px solid #3a3a3a;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+
+.hero-title{
+    color:white;
+    font-size:24px;
+    font-weight:700;
+    margin-bottom:8px;
+}
+
+.hero-sub{
+    color:#b5b5b5;
+    font-size:13px;
+    line-height:1.5;
+}
+
+.hero-btn{
+    background:white;
+    color:black;
+    border:none;
+    border-radius:14px;
+    padding:12px 18px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+/* =========================================
+   CATEGORIES
+========================================= */
+
+.categories{
+    display:flex;
+    overflow-x:auto;
+    gap:12px;
+    padding:0 20px 20px;
+    scrollbar-width:none;
+}
+
+.categories::-webkit-scrollbar{
+    display:none;
+}
+
+.categories span{
+    padding:10px 18px;
+    background:#2b2b2b;
+    border:1px solid #3a3a3a;
+    border-radius:20px;
+    color:#d7d7d7;
+    font-size:13px;
+    white-space:nowrap;
+    cursor:pointer;
+}
+
+.categories span.active{
+    background:white;
+    color:black;
+}
+
+/* =========================================
+   PRODUCT GRID
+========================================= */
+
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+    padding:0 20px;
+}
+
+.card{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    cursor:pointer;
+    transition:.25s ease;
+}
+
+.card:hover{
+    transform:translateY(-6px);
+}
+
+.img-wrapper{
+    background:#ffffff;
+    border-radius:20px;
+    padding:14px;
+    aspect-ratio:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:.25s;
+}
+
+.card:hover .img-wrapper{
+    background:#f4f4f4;
+}
+
+.card img{
+    width:100%;
+    object-fit:contain;
+}
+
+.product-name{
+    color:white;
+    font-size:14px;
+    font-weight:600;
+}
+
+.price{
+    color:white;
+    font-size:16px;
+    font-weight:700;
+}
+
+/* =========================================
+   DETAILS
+========================================= */
+
+.details-img{
+    width:100%;
+    height:360px;
+    background:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.details-img img{
+    max-width:70%;
+    max-height:70%;
+}
+
+.info-section{
+    padding:24px 20px;
+}
+
+.details-title{
+    color:white;
+    font-size:24px;
+    font-weight:700;
+    margin-bottom:10px;
+}
+
+.details-price{
+    color:white;
+    font-size:28px;
+    font-weight:700;
+    margin-bottom:20px;
+}
+
+.details-desc{
+    color:#bcbcbc;
+    line-height:1.7;
+    font-size:14px;
+}
+
+.details-bottom-bar{
+    position:fixed;
+    bottom:0;
+    width:100%;
+    padding:18px 20px;
+    background:#1d1d1d;
+    border-top:1px solid #3a3a3a;
+    display:flex;
+    gap:12px;
+}
+
+/* =========================================
+   CART
+========================================= */
+
+.list-container{
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+}
+
+.cart-item{
+    background:#252525;
+    border:1px solid #343434;
+    border-radius:20px;
+    padding:16px;
+    display:flex;
+    gap:14px;
+}
+
+.cart-item-img{
+    width:75px;
+    height:75px;
+    background:white;
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.cart-item-img img{
+    max-width:80%;
+    max-height:80%;
+}
+
+.cart-item-info{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+}
+
+.cart-item-title{
+    color:white;
+    font-weight:700;
+}
+
+.cart-qty-controls{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-top:8px;
+    color:white;
+}
+
+.qty-btn{
+    width:28px;
+    height:28px;
+    border:none;
+    border-radius:8px;
+    background:#3a3a3a;
+    color:white;
+    cursor:pointer;
+}
+
+.empty-state{
+    text-align:center;
+    color:#8f8f8f;
+    padding:80px 20px;
+}
+
+/* =========================================
+   FOOTER
+========================================= */
+
+.sticky-footer{
+    position:fixed;
+    bottom:0;
+    width:100%;
+    padding:18px 20px;
+    background:#222222;
+    border-top:1px solid #3a3a3a;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    z-index:100;
+}
+
+/* =========================================
+   PROFILE
+========================================= */
+
+.profile-header{
+    padding:40px 20px 20px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+}
+
+.avatar{
+    width:70px;
+    height:70px;
+    border-radius:50%;
+    background:#2d2d2d;
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:26px;
+    font-weight:700;
+}
+
+/* =========================================
+   FORMS
+========================================= */
+
+.form-group{
+    margin-bottom:16px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:8px;
+    color:white;
+    font-size:13px;
+    font-weight:600;
+}
+
+.form-input{
+    width:100%;
+    padding:15px;
+    border-radius:12px;
+    border:1px solid #3a3a3a;
+    background:#2d2d2d;
+    color:white;
+    outline:none;
+}
+
+.form-input:focus{
+    border-color:#777;
+}
+
+/* =========================================
+   PAYMENT
+========================================= */
+
+.payment-option{
+    padding:16px;
+    border-radius:14px;
+    border:1px solid #3a3a3a;
+    background:#2d2d2d;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:12px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.payment-option.active{
+    background:#3a3a3a;
+    border-color:white;
+}
+
+.payment-icon{
+    width:34px;
+    height:34px;
+    border-radius:10px;
+    background:#1d1d1d;
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+/* =========================================
+   TOAST
+========================================= */
+
+#toast{
+    position:fixed;
+    left:50%;
+    bottom:120px;
+    transform:translateX(-50%);
+    background:white;
+    color:black;
+    padding:14px 20px;
+    border-radius:14px;
+    font-weight:700;
+    opacity:0;
+    pointer-events:none;
+    transition:.3s;
+    z-index:5000;
+}
+
+#toast.show{
+    opacity:1;
+    bottom:140px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- NAV -->
+<div id="main-nav" class="bottom-nav-container">
+    <div class="bottom-nav">
+
+        <div class="nav-item active-nav" onclick="navTo('home')">
+            <span class="nav-icon">⌂</span>
+            Shop
+        </div>
+
+        <div class="nav-item" onclick="navTo('cart')">
+            <span class="nav-icon">🛒</span>
+            Cart
+            <span id="cart-badge">0</span>
+        </div>
+
+        <div class="nav-item" onclick="navTo('profile')">
+            <span class="nav-icon">👤</span>
+            Profile
+        </div>
+
+    </div>
+</div>
+
+<!-- HOME -->
+<div id="screen-home" class="screen main-layout active">
+
+    <div class="header-standard">
+        <div class="search-container">
+            <span style="color:white;margin-right:10px;">⌕</span>
+            <input type="text" placeholder="Search products...">
+        </div>
+    </div>
+
+    <div class="hero-banner">
+        <div>
+            <div class="hero-title">
+                Minimal Tech Store
+            </div>
+
+            <div class="hero-sub">
+                Premium PC Components & Audio Gear
+            </div>
+        </div>
+
+        <button class="hero-btn">
+            Explore
+        </button>
+    </div>
+
+    <div class="categories">
+        <span class="active">All</span>
+        <span>Processors</span>
+        <span>Graphics Cards</span>
+        <span>Audio</span>
+        <span>Accessories</span>
+    </div>
+
+    <div class="grid" id="product-grid"></div>
+
+</div>
+
+<!-- CART -->
+<div id="screen-cart" class="screen main-layout">
+
+    <div class="header-standard">
+        <div class="header-title">
+            Your Cart
+        </div>
+    </div>
+
+    <div id="cart-list" class="list-container"></div>
+
+    <div class="sticky-footer" id="cart-footer" style="display:none; bottom:85px; border-radius:20px 20px 0 0;">
+
+        <div>
+            <div style="font-size:12px;color:#bcbcbc;">
+                Subtotal
+            </div>
+
+            <div id="cart-subtotal" style="font-size:20px;font-weight:700;color:white;">
+                ₱0
+            </div>
+        </div>
+
+        <button class="btn-primary" onclick="navTo('checkout')">
+            Proceed
+        </button>
+
+    </div>
+
+</div>
+
+<!-- PROFILE -->
+<div id="screen-profile" class="screen main-layout">
+
+    <div class="profile-header">
+
+        <div class="avatar">
+            J
+        </div>
+
+        <div>
+            <div style="color:white;font-size:20px;font-weight:700;">
+                Luis De taza
+            </div>
+
+            <div style="color:#bcbcbc;font-size:13px;">
+                IT Student
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- DETAILS -->
+<div id="screen-details" class="screen">
+
+    <div class="header-standard" style="background:transparent;position:absolute;width:100%;">
+
+        <div class="btn-icon" onclick="navTo('home')">
+            ←
+        </div>
+
+    </div>
+
+    <div class="details-img">
+        <img id="det-img" src="">
+    </div>
+
+    <div class="info-section">
+
+        <div id="det-title" class="details-title">
+            Product
+        </div>
+
+        <div id="det-price" class="details-price">
+            ₱0
+        </div>
+
+        <div id="det-rating" style="color:#cfcfcf;margin-bottom:18px;">
+            ⭐ 0
+        </div>
+
+        <p id="det-desc" class="details-desc"></p>
+
+    </div>
+
+    <div class="details-bottom-bar">
+
+        <button class="btn-secondary" onclick="addToCart()">
+            Add to Cart
+        </button>
+
+        <button class="btn-primary" onclick="buyNow()">
+            Buy Now
+        </button>
+
+    </div>
+
+</div>
+
+<!-- CHECKOUT -->
+<div id="screen-checkout" class="screen" style="padding-bottom:120px;">
+
+    <div class="header-standard">
+
+        <div class="btn-icon" onclick="navTo('cart')">
+            ←
+        </div>
+
+        <div class="header-title">
+            Checkout
+        </div>
+
+    </div>
+
+    <!-- DELIVERY -->
+    <div style="padding:20px;background:#242424;margin-top:12px;">
+
+        <div style="font-size:18px;font-weight:700;color:white;margin-bottom:20px;">
+            Delivery Details
+        </div>
+
+        <div class="form-group">
+            <label>Full Name</label>
+            <input id="chk-name" class="form-input" type="text" placeholder="Juan Dela Cruz">
+        </div>
+
+        <div class="form-group">
+            <label>Phone Number</label>
+            <input id="chk-phone" class="form-input" type="tel" placeholder="0912 345 6789">
+        </div>
+
+        <div class="form-group">
+            <label>Complete Address</label>
+            <input id="chk-address" class="form-input" type="text" placeholder="Street, City">
+        </div>
+
+    </div>
+
+    <!-- ORDER SUMMARY -->
+    <div style="padding:20px;background:#242424;margin-top:12px;">
+
+        <div style="font-size:18px;font-weight:700;color:white;margin-bottom:20px;">
+            Order Summary
+        </div>
+
+        <div id="checkout-items" class="list-container" style="padding:0;"></div>
+
+    </div>
+
+    <!-- PAYMENT -->
+    <div style="padding:20px;background:#242424;margin-top:12px;">
+
+        <div style="font-size:18px;font-weight:700;color:white;margin-bottom:20px;">
+            Payment Method
+        </div>
+
+        <div class="payment-option active" onclick="selectPayment(this,'GCash')">
+
+            <div class="payment-icon">
+                GC
+            </div>
+
+            <div style="color:white;">
+                GCash
+            </div>
+
+        </div>
+
+        <div class="payment-option" onclick="selectPayment(this,'COD')">
+
+            <div class="payment-icon">
+                💵
+            </div>
+
+            <div style="color:white;">
+                Cash on Delivery
+            </div>
+
+        </div>
+
+        <div class="payment-option" onclick="selectPayment(this,'Card')">
+
+            <div class="payment-icon">
+                💳
+            </div>
+
+            <div style="color:white;">
+                Credit / Debit Card
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- TOTAL -->
+    <div style="padding:20px;background:#242424;margin-top:12px;">
+
+        <div style="display:flex;justify-content:space-between;color:white;margin-bottom:12px;">
+            <span>Subtotal</span>
+            <span id="check-sub">₱0</span>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;color:white;margin-bottom:12px;">
+            <span>Shipping</span>
+            <span>₱65</span>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;color:white;font-size:18px;font-weight:700;padding-top:16px;border-top:1px dashed #555;">
+            <span>Total Payment</span>
+            <span id="check-total">₱0</span>
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="sticky-footer">
+
+        <div>
+            <div style="font-size:12px;color:#bcbcbc;">
+                Total Payment
+            </div>
+
+            <div id="check-footer-total" style="font-size:22px;font-weight:700;color:white;">
+                ₱0
+            </div>
+        </div>
+
+        <button class="btn-primary" onclick="placeOrder()">
+            Place Order
+        </button>
+
+    </div>
+
+</div>
+
+<!-- SUCCESS -->
+<div id="screen-success" class="screen">
+
+    <div style="
+        height:100vh;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+        text-align:center;
+        padding:30px;
+    ">
+
+        <div style="
+            width:100px;
+            height:100px;
+            border-radius:50%;
+            background:#2d2d2d;
+            color:white;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:42px;
+            margin-bottom:24px;
+        ">
+            ✓
+        </div>
+
+        <div style="
+            color:white;
+            font-size:32px;
+            font-weight:700;
+            margin-bottom:12px;
+        ">
+            Order Successful
+        </div>
+
+        <div style="
+            color:#bcbcbc;
+            max-width:320px;
+            line-height:1.7;
+            margin-bottom:30px;
+        ">
+            Thank you for shopping with us.
+            Your order is now being processed.
+        </div>
+
+        <button class="btn-primary" onclick="navTo('home')">
+            Continue Shopping
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+const database = [
+
+{
+    id:1,
+    name:"Ryzen 9 9900X",
+    price:4500,
+    rating:4.8,
+    img:"./ryzen9.png",
+    desc:"High performance gaming processor for multitasking and content creation."
+},
+
+{
+    id:2,
+    name:"GeForce RTX 5060",
+    price:3800,
+    rating:4.7,
+    img:"./gpu.png",
+    desc:"Powerful graphics card for gaming and rendering workloads."
+},
+
+{
+    id:3,
+    name:"Shure SM7B Microphone",
+    price:750,
+    rating:4.9,
+    img:"./mic.jpg",
+    desc:"Professional studio microphone for streaming and recording."
+},
+
+{
+    id:4,
+    name:"KZ Castor IEMs",
+    price:890,
+    rating:4.6,
+    img:"./iem.jpg",
+    desc:"Dual-driver in-ear monitors with excellent audio clarity."
+}
+
+];
+
+let cart = [];
+let currentProduct = null;
+let selectedPayment = "GCash";
+
+window.onload = () => {
+    renderHome();
+};
+
+function showToast(message){
+
+    const toast = document.getElementById('toast');
+
+    toast.innerText = message;
+
+    toast.classList.add('show');
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+    },2500);
+}
+
+function navTo(tab){
+
+    document.querySelectorAll('.screen')
+    .forEach(screen => screen.classList.remove('active'));
+
+    document.querySelectorAll('.nav-item')
+    .forEach(nav => nav.classList.remove('active-nav'));
+
+    const mainNav = document.getElementById('main-nav');
+
+    if(['home','cart','profile'].includes(tab)){
+
+        mainNav.classList.remove('hidden');
+
+        document.getElementById(`screen-${tab}`)
+        .classList.add('active');
+
+        const index = ['home','cart','profile']
+        .indexOf(tab);
+
+        document.querySelectorAll('.nav-item')[index]
+        .classList.add('active-nav');
+
+        if(tab === 'cart'){
+            renderCart();
+        }
+
+    }else{
+
+        mainNav.classList.add('hidden');
+
+        document.getElementById(`screen-${tab}`)
+        .classList.add('active');
+
+        if(tab === 'checkout'){
+            renderCheckout();
+        }
+    }
+
+    window.scrollTo(0,0);
+}
+
+function renderHome(){
+
+    const grid = document.getElementById('product-grid');
+
+    grid.innerHTML = '';
+
+    database.forEach(p => {
+
+        grid.innerHTML += `
+        
+        <div class="card" onclick="openDetails(${p.id})">
+
+            <div class="img-wrapper">
+                <img src="${p.img}">
+            </div>
+
+            <div class="product-name">
+                ${p.name}
+            </div>
+
+            <div style="font-size:12px;color:#bcbcbc;">
+                ⭐ ${p.rating}
+            </div>
+
+            <div class="price">
+                ₱${p.price.toLocaleString()}
+            </div>
+
+        </div>
+        
+        `;
+    });
+}
+
+function openDetails(id){
+
+    currentProduct = database.find(p => p.id === id);
+
+    document.getElementById('det-img').src =
+    currentProduct.img;
+
+    document.getElementById('det-title').innerText =
+    currentProduct.name;
+
+    document.getElementById('det-price').innerText =
+    `₱${currentProduct.price.toLocaleString()}`;
+
+    document.getElementById('det-rating').innerText =
+    `⭐ ${currentProduct.rating}`;
+
+    document.getElementById('det-desc').innerText =
+    currentProduct.desc;
+
+    navTo('details');
+}
+
+function addToCart(){
+
+    const existing =
+    cart.find(item => item.id === currentProduct.id);
+
+    if(existing){
+        existing.qty += 1;
+    }else{
+        cart.push({
+            ...currentProduct,
+            qty:1
+        });
+    }
+
+    updateBadge();
+
+    showToast(`${currentProduct.name} added to cart`);
+}
+
+function buyNow(){
+
+    addToCart();
+
+    navTo('checkout');
+}
+
+function updateBadge(){
+
+    document.getElementById('cart-badge')
+    .innerText = cart.reduce((sum,item) =>
+    sum + item.qty,0);
+}
+
+function renderCart(){
+
+    const list = document.getElementById('cart-list');
+
+    const footer =
+    document.getElementById('cart-footer');
+
+    list.innerHTML = '';
+
+    if(cart.length === 0){
+
+        footer.style.display = 'none';
+
+        list.innerHTML = `
+        <div class="empty-state">
+            Your cart is empty.
+        </div>
+        `;
+
+        return;
+    }
+
+    footer.style.display = 'flex';
+
+    let subtotal = 0;
+
+    cart.forEach(item => {
+
+        subtotal += item.price * item.qty;
+
+        list.innerHTML += `
+        
+        <div class="cart-item">
+
+            <div class="cart-item-img">
+                <img src="${item.img}">
+            </div>
+
+            <div class="cart-item-info">
+
+                <div class="cart-item-title">
+                    ${item.name}
+                </div>
+
+                <div style="font-weight:700;color:white;">
+                    ₱${item.price.toLocaleString()}
+                </div>
+
+                <div class="cart-qty-controls">
+
+                    <button class="qty-btn"
+                    onclick="changeQty(${item.id},-1)">
+                        −
+                    </button>
+
+                    <span>${item.qty}</span>
+
+                    <button class="qty-btn"
+                    onclick="changeQty(${item.id},1)">
+                        +
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+        
+        `;
+    });
+
+    document.getElementById('cart-subtotal')
+    .innerText = `₱${subtotal.toLocaleString()}`;
+}
+
+function changeQty(id, amount){
+
+    const item = cart.find(i => i.id === id);
+
+    if(!item) return;
+
+    item.qty += amount;
+
+    if(item.qty <= 0){
+        cart = cart.filter(i => i.id !== id);
+    }
+
+    updateBadge();
+
+    renderCart();
+}
+
+function renderCheckout(){
+
+    if(cart.length === 0){
+
+        showToast("Add items first");
+
+        navTo('home');
+
+        return;
+    }
+
+    const list =
+    document.getElementById('checkout-items');
+
+    list.innerHTML = '';
+
+    let subtotal = 0;
+
+    cart.forEach(item => {
+
+        subtotal += item.price * item.qty;
+
+        list.innerHTML += `
+        
+        <div style="display:flex;gap:12px;">
+
+            <div class="cart-item-img"
+            style="width:55px;height:55px;">
+                <img src="${item.img}">
+            </div>
+
+            <div style="flex:1;color:white;">
+
+                <div style="font-weight:700;">
+                    ${item.name}
+                </div>
+
+                <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    margin-top:6px;
+                    color:#bcbcbc;
+                    font-size:13px;
+                ">
+
+                    <span>
+                        ₱${item.price.toLocaleString()}
+                    </span>
+
+                    <span>
+                        x${item.qty}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+        
+        `;
+    });
+
+    const total = subtotal + 65;
+
+    document.getElementById('check-sub')
+    .innerText = `₱${subtotal.toLocaleString()}`;
+
+    document.getElementById('check-total')
+    .innerText = `₱${total.toLocaleString()}`;
+
+    document.getElementById('check-footer-total')
+    .innerText = `₱${total.toLocaleString()}`;
+}
+
+function selectPayment(element, method){
+
+    document.querySelectorAll('.payment-option')
+    .forEach(el => el.classList.remove('active'));
+
+    element.classList.add('active');
+
+    selectedPayment = method;
+}
+
+function placeOrder(){
+
+    const name =
+    document.getElementById('chk-name').value;
+
+    const phone =
+    document.getElementById('chk-phone').value;
+
+    const address =
+    document.getElementById('chk-address').value;
+
+    if(!name || !phone || !address){
+
+        showToast("Please complete delivery details");
+
+        return;
+    }
+
+    cart = [];
+
+    updateBadge();
+
+    document.getElementById('chk-name').value = '';
+    document.getElementById('chk-phone').value = '';
+    document.getElementById('chk-address').value = '';
+
+    navTo('success');
+}
+
+</script>
+
+</body>
+</html>
